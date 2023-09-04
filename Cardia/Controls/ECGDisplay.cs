@@ -38,6 +38,8 @@ namespace MGT.Cardia
 
         Color backColor = Color.Black;
         Color selectedColor = Color.Lime;
+        Font mainFont = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        double fontMultiplier = 1.0;
         Brush brush = Brushes.Lime;
         Pen pen;
 
@@ -88,6 +90,34 @@ namespace MGT.Cardia
             set
             {
                 brushSize = value;
+            }
+        }
+
+        public double FontMultiplier
+        {
+            get
+            {
+                return fontMultiplier;
+            }
+            set
+            {
+                fontMultiplier = value;
+
+                ApplyFont();
+            }
+        }
+
+        public Font MainFont
+        {
+            get
+            {
+                return mainFont;
+            }
+            set
+            {
+                mainFont = value;
+
+                ApplyFont();
             }
         }
 
@@ -213,8 +243,20 @@ namespace MGT.Cardia
 
             InitializeECGChartImage();
             ApplyColor();
+            ApplyFont();
 
             ChartTime = chartTime;
+        }
+
+        private void ApplyFont()
+        {
+            this.lbMaxBPM.Font = new System.Drawing.Font(mainFont.FontFamily, (float)(15.75F*fontMultiplier), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0))); ;
+            this.lbMinBPM.Font = new System.Drawing.Font(mainFont.FontFamily, (float)(15.75F *fontMultiplier), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0))); ;
+            this.lbMaxBPMDesc.Font = new System.Drawing.Font(mainFont.FontFamily, (float)(15.75F * fontMultiplier), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0))); ;
+            this.lbMinBPMDesc.Font = new System.Drawing.Font(mainFont.FontFamily, (float)(15.75F * fontMultiplier), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0))); ;
+            this.lbBPM.Font = new System.Drawing.Font(mainFont.FontFamily, (float)(60F * fontMultiplier), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbBPMDesc.Font = new System.Drawing.Font(mainFont.FontFamily, (float)(15.75F * fontMultiplier), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0))); ;
+            this.lbNickname.Font = new System.Drawing.Font(mainFont.FontFamily, (float)(15.75F * fontMultiplier), System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0))); ;
         }
 
         private void ApplyColor()

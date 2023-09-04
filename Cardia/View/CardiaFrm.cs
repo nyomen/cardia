@@ -9,6 +9,7 @@ using MGT.HRM.Zephyr_HxM;
 using System.Collections.Concurrent;
 using MGT.HRM.CMS50;
 using MGT.HRM.HRP;
+using System.Reflection.Emit;
 
 namespace MGT.Cardia
 {
@@ -42,6 +43,8 @@ namespace MGT.Cardia
             cardia.StatusChanged += cardia_StatusChanged;
             cardia.BundleChanged += cardia_BundleChanged;
             cardia.ColorChanged += cardia_ColorChanged;
+            cardia.MainFontChanged += Cardia_MainFontChanged;
+            cardia.FontSizeChanged += Cardia_FontSizeChanged;
             cardia.AutoStartChanged += cardia_AutoStartChanged;
             cardia.StartShrinkedChanged += cardia_StartShrinkedChanged;
             cardia.ChartTimeChanged += cardia_ChartTimeChanged;
@@ -65,7 +68,6 @@ namespace MGT.Cardia
             InitializeAlarmPanel();
             InitializeLogPanel();
             InitializeNetworkPanel();
-            InitializeColors();
         }
 
         private void InitializeDevices()
@@ -79,12 +81,6 @@ namespace MGT.Cardia
                 miDevice.DropDownItems.Insert(miDevice.DropDownItems.Count - 2, item);
                 deviceMenuItems.Add(item);
             }
-        }
-
-        private void InitializeColors()
-        {
-            foreach (Color color in cardia.Colors)
-                cbColor.Items.Add(color);
         }
 
         #endregion
@@ -141,9 +137,20 @@ namespace MGT.Cardia
             }
         }
 
+
+        void Cardia_MainFontChanged(object sender, Font mainFont)
+        {
+            ecgDisplay.MainFont = mainFont;
+        }
+
+
+        private void Cardia_FontSizeChanged(object sender, double fontSize)
+        {
+            ecgDisplay.FontMultiplier = fontSize;
+        }
+
         void cardia_ColorChanged(object sender, Color color)
         {
-            cbColor.SelectedItem = color;
             ecgDisplay.Color = color;
 
             foreach (ECGDisplay clientDisplay in displays.Values)
@@ -282,11 +289,6 @@ namespace MGT.Cardia
         private void miSoundPlayAlarm_Click(object sender, EventArgs e)
         {
             cardia.PlayAlarm = !miSoundPlayAlarm.Checked;
-        }
-
-        private void cbColor_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            cardia.Color = (Color)cbColor.SelectedItem;
         }
 
         private void toolStripMenuItemAutostart_CheckedChanged(object sender, EventArgs e)
@@ -650,7 +652,6 @@ namespace MGT.Cardia
 
                     clientDisplay.BrushSize = ecgDisplay.BrushSize;
                     clientDisplay.ChartTime = Convert.ToInt32(nudChartTime.Value) * 1000;
-                    clientDisplay.Color = (Color)cbColor.SelectedItem;
                     clientDisplay.Dock = System.Windows.Forms.DockStyle.Top;
                     clientDisplay.Interval = ecgDisplay.Interval;
                     clientDisplay.Margin = ecgDisplay.Margin;
@@ -708,5 +709,19 @@ namespace MGT.Cardia
         }
 
         #endregion Networking
+
+        private void fontSelectorBtn_Click(object sender, EventArgs e)
+        {
+            FontDialog fontDlg = new FontDialog();
+            if (fontDlg.ShowDialog() != DialogResult.Cancel)
+            {
+                cardia.MainFont = fontDlg.Font;
+            }
+        }
+
+        private void tbFontSize_Scroll(object sender, EventArgs e)
+        {
+            cardia.FontSize = tbFontSize.Value/10.0;
+        }
     }
 }

@@ -86,7 +86,9 @@ namespace MGT.Cardia
         public bool AutoStart = false;
         public bool StartInShrinkMode = false;
         public int ChartTime = 5;
-        public int Color = 0;
+        public string MainFont = FontSerializationHelper.ToString(new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0))));
+        public double FontSize = 1.0;
+        public string Color = "#FF0000";
         public int Volume = 5;
         public bool PlayBeat = true;
         public bool PlayAlarm = true;

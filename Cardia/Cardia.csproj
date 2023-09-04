@@ -88,6 +88,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Model\HRMAlarm.cs" />
+    <Compile Include="Utils\FontSerializationHelper.cs" />
     <Compile Include="View\AboutFrm.cs">
       <SubType>Form</SubType>
     </Compile>

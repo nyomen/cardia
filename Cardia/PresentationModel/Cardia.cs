@@ -32,7 +32,6 @@ namespace MGT.Cardia
 
             InitializeLoggers();
             InitializeNetworkProvider();
-            InitializeColors();
         }
 
         #endregion
@@ -136,6 +135,8 @@ namespace MGT.Cardia
 
         // Fields
         private Color color;
+        private Font mainFont;
+        private double fontSize;
         private bool autoStart;
         private bool startShrinked;
         private int chartTime;
@@ -148,6 +149,8 @@ namespace MGT.Cardia
         // Events
         public event GenericEventHandler<string, bool> StatusChanged;
         public event GenericEventHandler<Color> ColorChanged;
+        public event GenericEventHandler<Font> MainFontChanged;
+        public event GenericEventHandler<double> FontSizeChanged;
         public event GenericEventHandler<bool> AutoStartChanged;
         public event GenericEventHandler<bool> StartShrinkedChanged;
         public event GenericEventHandler<int> ChartTimeChanged;
@@ -162,13 +165,38 @@ namespace MGT.Cardia
         public event GenericEventHandler<bool> PlayBeatChanged;
         public event GenericEventHandler<bool> PlayAlarmChanged;
 
-        // Properties
-        public List<Color> Colors { get; private set; }
+        public Font MainFont
+        {
+            get { return mainFont; }
+            set
+            {
+                Font bck = mainFont;
+                mainFont = value;
 
-        public Color Color 
+                if (value != bck)
+                    if (MainFontChanged != null)
+                        MainFontChanged(this, value);
+            }
+        }
+
+        public double FontSize
+        {
+            get { return fontSize; }
+            set
+            {
+                double bck = fontSize;
+                fontSize = value;
+
+                if (value != bck)
+                    if (FontSizeChanged != null)
+                        FontSizeChanged(this, value);
+            }
+        }
+
+        public Color Color
         {
             get { return color; }
-            set 
+            set
             {
                 Color bck = color;
                 color = value;
@@ -361,22 +389,6 @@ namespace MGT.Cardia
             }
         }
 
-        // Methods
-        private void InitializeColors()
-        {
-            Colors = new List<Color>();
-            Colors.Add(Color.Lime);
-            Colors.Add(Color.Green);
-            Colors.Add(Color.Blue);
-            Colors.Add(Color.Cyan);
-            Colors.Add(Color.Purple);
-            Colors.Add(Color.Fuchsia);
-            Colors.Add(Color.Red);
-            Colors.Add(Color.Orange);
-            Colors.Add(Color.Yellow);
-            Colors.Add(Color.White);
-        }
-
         #endregion
 
         #region Commands
@@ -391,7 +403,7 @@ namespace MGT.Cardia
             RegisterBundlesEventHandlers();
             LoadConfig();
             if (bundle == null)
-                bundle = Bundles[0];       
+                bundle = Bundles[0];
 
             FireEventChain();
         }
@@ -417,7 +429,11 @@ namespace MGT.Cardia
 
             RegisterHrmEventHandlers();
 
-            color = Colors[configuration.Color];
+            mainFont = FontSerializationHelper.FromString(configuration.MainFont);
+
+            fontSize = configuration.FontSize;
+
+            color = ColorTranslator.FromHtml(configuration.Color);
 
             autoStart = configuration.AutoStart;
 
@@ -447,7 +463,7 @@ namespace MGT.Cardia
 
             logFormat = configuration.Log.Format;
 
-            switch(logFormat)
+            switch (logFormat)
             {
                 case LogFormat.CSV:
                     logger = bundle.CSVLogger;
@@ -468,6 +484,12 @@ namespace MGT.Cardia
         {
             if (BundleChanged != null)
                 BundleChanged(this, bundle);
+
+            if (MainFontChanged != null)
+                MainFontChanged(this, mainFont);
+
+            if (FontSizeChanged != null)
+                FontSizeChanged(this, fontSize);
 
             if (ColorChanged != null)
                 ColorChanged(this, color);
@@ -597,7 +619,11 @@ namespace MGT.Cardia
 
         public void SaveConfig()
         {
-            configuration.Color = Colors.IndexOf(color);
+            configuration.MainFont = FontSerializationHelper.ToString(mainFont);
+
+            configuration.FontSize = fontSize;
+
+            configuration.Color = ColorTranslator.ToHtml(color);
 
             configuration.AutoStart = autoStart;
 
@@ -676,7 +702,7 @@ namespace MGT.Cardia
                         LogFormatChanged(this, value);
             }
         }
-        
+
         public bool LogEnabled
         {
             get { return logEnabled; }
@@ -939,7 +965,7 @@ namespace MGT.Cardia
             if (NetworkClientConnected != null)
                 NetworkClientConnected(this, clientId, nickname);
 
-            clientGenerator.OnSignalGenerated += delegate(object o, SignalGeneratedEventArgs e)
+            clientGenerator.OnSignalGenerated += delegate (object o, SignalGeneratedEventArgs e)
             {
                 if (ClientSignalGenerated != null)
                     ClientSignalGenerated(this, clientId, e);
